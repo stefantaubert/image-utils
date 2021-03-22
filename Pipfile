@@ -17,7 +17,6 @@ numpy = "*"
 Pillow = "*"
 imageio = "*"
 scikit-image = "*"
-pipenv-setup = "*"
 
 [requires]
 python_version = "3.8"
