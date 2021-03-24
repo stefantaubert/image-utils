@@ -53,12 +53,12 @@ def stack_images_horizontally(list_im: List[str], out_path: str) -> None:
   logging.getLogger().setLevel(old_level)
 
 
-def calculate_structual_similarity(path_a, path_b):
+def calculate_structual_similarity(path_a: str, path_b: str) -> Tuple[float, np.ndarray]:
   img_a = imageio.imread(path_a)
   img_b = imageio.imread(path_b)
   # img_a, img_b = make_same_width_by_cutting(img_a, img_b)
   img_a, img_b = make_same_width_by_filling_white(img_a, img_b)
-  return compare_mels_core(img_a, img_b)
+  return calculate_structual_similarity_np(img_a, img_b)
 
 
 def make_same_width_by_cutting_larger_img(img_a: np.ndarray, img_b: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
@@ -70,6 +70,23 @@ def make_same_width_by_cutting_larger_img(img_a: np.ndarray, img_b: np.ndarray) 
   #imageio.imsave("/tmp/a.png", img_a)
   #imageio.imsave("/tmp/b.png", img_b)
   return img_a, img_b
+
+
+def calculate_structual_similarity_np(img_a: np.ndarray, img_b: np.ndarray) -> Tuple[float, np.ndarray]:
+  #img_b = imageio.imread(path_original_plot)
+  have_same_height = img_a.shape[0] == img_b.shape[0]
+  have_same_width = img_a.shape[1] == img_b.shape[1]
+  assert have_same_height and have_same_width
+  score, diff_img = structural_similarity(
+    im1=img_a,
+    im2=img_b,
+    full=True,
+    multichannel=True
+  )
+  #imageio.imsave(path_out, diff)
+  # to prevent -> "WARNING:imageio:Lossy conversion from float64 to uint8. Range [-0.9469735935228797, 1.0000000000019036]."
+  #diff_img = diff_img.astype(np.uint8)
+  return score, diff_img
 
 
 def make_same_width_by_filling_white(img_a: np.ndarray, img_b: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
@@ -95,20 +112,3 @@ def make_same_width_by_filling_white(img_a: np.ndarray, img_b: np.ndarray) -> Tu
   have_same_width = img_a_res.shape[1] == img_b_res.shape[1]
   assert have_same_width
   return img_a_res, img_b_res
-
-
-def compare_mels_core(img_a: np.ndarray, img_b: np.ndarray):
-  #img_b = imageio.imread(path_original_plot)
-  have_same_height = img_a.shape[0] == img_b.shape[0]
-  have_same_width = img_a.shape[1] == img_b.shape[1]
-  assert have_same_height and have_same_width
-  score, diff_img = structural_similarity(
-    im1=img_a,
-    im2=img_b,
-    full=True,
-    multichannel=True
-  )
-  #imageio.imsave(path_out, diff)
-  # to prevent -> "WARNING:imageio:Lossy conversion from float64 to uint8. Range [-0.9469735935228797, 1.0000000000019036]."
-  #diff_img = diff_img.astype(np.uint8)
-  return score, diff_img
