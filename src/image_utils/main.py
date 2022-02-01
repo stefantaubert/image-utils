@@ -81,7 +81,7 @@ def calculate_structual_similarity_np(img_a: np.ndarray, img_b: np.ndarray) -> T
     im1=img_a,
     im2=img_b,
     full=True,
-    multichannel=True
+    channel_axis=-1,
   )
   #imageio.imsave(path_out, diff)
   # to prevent -> "WARNING:imageio:Lossy conversion from float64 to uint8. Range [-0.9469735935228797, 1.0000000000019036]."
